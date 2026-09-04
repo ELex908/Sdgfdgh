@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product — SHACK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0a12;
+            --surface: #131324;
+            --border: #232338;
+            --text: #e7e7f2;
+            --muted: #8a8aa3;
+            --accent: #34d36b;
+            --accent2: #4ade80;
+            --success: #3ad66a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* LineWaves background */
+        .linewaves-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+        }
+
+        /* Topbar */
+        .topbar {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 24px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(10,10,18,0.6);
+            backdrop-filter: blur(8px);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            letter-spacing: 3px;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .topbar span {
+            background: linear-gradient(90deg, #34d36b, #86efac, #4ade80, #34d36b);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            to { background-position: 200% center; }
+        }
+
+        .topbar .discord {
+            position: absolute;
+            right: 20px;
+            color: var(--muted);
+            font-size: 20px;
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .topbar .discord:hover { color: #5865F2; }
+
+        /* Card pinned to top-left corner */
+        .card-wrap {
+            position: relative;
+            z-index: 1;
+            padding: 24px;
+            perspective: 900px;
+            animation: popIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1), cardFloat 5s ease-in-out 0.7s infinite;
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: translateY(40px) scale(0.8); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes cardFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .discord-card {
+            background: #101018;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+            width: 100%;
+            max-width: 400px;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .dc-banner {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background: #0d0d18;
+        }
+
+        .dc-banner img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            filter: grayscale(1);
+        }
+
+        .dc-banner::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, transparent 40%, rgba(0,0,0,0.35) 100%);
+            pointer-events: none;
+        }
+
+        .dc-count {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700;
+            font-size: 11px;
+            width: 22px;
+            height: 22px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(52,211,107,0.5);
+            z-index: 1;
+        }
+
+        .dc-body {
+            padding: 16px 18px 18px;
+        }
+
+        .dc-name {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .dc-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .dc-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .dc-avatar::after {
+            content: "";
+            position: absolute;
+            bottom: -3px;
+            right: -3px;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #3ad66a;
+            border: 2px solid var(--bg);
+        }
+
+        .dc-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 50%;
+        }
+
+        .dc-user-info {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.25;
+        }
+
+        .dc-lyapos {
+            color: #4ade80;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .dc-admin {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .dc-buy {
+            width: 100%;
+            background: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.15s;
+            font-family: inherit;
+            color: #fff;
+        }
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .dc-buy:hover {
+            background: #4ade80;
+            border-color: #4ade80;
+        }
+
+        .dc-price {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .dc-chevron {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        /* ---- Product modal ---- */
+        .pm-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(6px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+        .pm-modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .pm-box {
+            background: rgba(16,16,28,0.92);
+            border-radius: 18px;
+            max-width: 460px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+            transform: translateY(30px) scale(0.92);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .pm-modal.open .pm-box {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        .pm-gallery {
+            position: relative;
+            background: #0d0d18;
+        }
+
+        .pm-gallery img,
+        .pm-gallery iframe {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border: 0;
+        }
+
+        .pm-gallery img.filter-bw { filter: grayscale(1); }
+        .pm-gallery img.filter-purple { filter: hue-rotate(40deg) saturate(1.6); }
+        .pm-gallery img.filter-solar { filter: invert(0.9) hue-rotate(180deg); }
+
+        .pm-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .pm-arrow:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .pm-arrow.left { left: 12px; }
+        .pm-arrow.right { right: 12px; }
+
+        .pm-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 2;
+            transition: 0.15s;
+        }
+
+        .pm-close:hover { background: #d9344d; }
+
+        .pm-dots {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+        }
+
+        .pm-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .pm-dot.active { background: var(--accent); }
+
+        .pm-info {
+            padding: 22px 24px 24px;
+        }
+
+        .pm-info h3 {
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .pm-price {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 14px;
+        }
+
+        .pm-info ul {
+            list-style: none;
+            margin-bottom: 18px;
+        }
+
+        .pm-info li {
+            padding: 5px 0;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .pm-info li::before {
+            content: "\f058";
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--success);
+            margin-right: 8px;
+        }
+
+        .pm-buy {
+            width: 100%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .pm-buy:hover { background: #4ade80; }
+
+        /* ---- Support widget ---- */
+        .support-fab {
+            position: fixed;
+            bottom: 22px;
+            right: 22px;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #34d36b, #4ade80);
+            color: #fff;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            z-index: 99;
+        }
+
+        .support-fab:hover {
+            transform: scale(1.1);
+        }
+
+        .support-popup {
+            position: fixed;
+            bottom: 92px;
+            right: 22px;
+            width: 240px;
+            background: rgba(19,19,36,0.95);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(12px);
+            transition: 0.25s;
+            z-index: 99;
+        }
+
+        .support-popup.open {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .support-popup h4 {
+            font-size: 15px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .support-popup p {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .support-opt {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            background: none;
+            border: none;
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            text-align: left;
+            transition: 0.15s;
+        }
+
+        .support-opt:hover { background: var(--surface); }
+
+        .support-opt i {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .support-opt .i-discord { background: #5865F2; }
+        .support-opt .i-mail { background: #d9344d; }
+        .support-opt .i-help { background: var(--accent2); }
+
+        /* ---- Welcome popup ---- */
+        .wo-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(6px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+        .wo-modal.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .wo-box {
+            background: rgba(16,16,28,0.92);
+            border-radius: 18px;
+            max-width: 360px;
+            width: 100%;
+            overflow: hidden;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+            transform: translateY(30px) scale(0.92);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .wo-modal.open .wo-box {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        .wo-gif {
+            width: 100%;
+            display: block;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .wo-body {
+            padding: 22px 24px 26px;
+        }
+
+        .wo-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .wo-sub {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 18px;
+        }
+
+        .wo-btn {
+            width: 100%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 13px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .wo-btn:hover { background: #4ade80; }
+
+        /* ---- Shine effect on buttons ---- */
+        .dc-buy, .pm-buy, .wo-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .support-fab {
+            overflow: hidden;
+        }
+
+        .dc-buy::after, .pm-buy::after, .wo-btn::after, .support-fab::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(100deg, transparent, rgba(255,255,255,0.45), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.5s ease;
+            pointer-events: none;
+        }
+
+        .dc-buy:hover::after, .pm-buy:hover::after, .wo-btn:hover::after, .support-fab:hover::after {
+            left: 150%;
+        }
+        </style>
+</head>
+<body>
+    <div class="linewaves-bg" id="linewaves"></div>
+    <div class="topbar">
+        Im<span>Gui</span> Shack
+        <a href="#" class="discord" title="Discord"><i class="fa-brands fa-discord"></i></a>
+    </div>
+    <div class="card-wrap">
+        <div class="discord-card">
+            <div class="dc-banner">
+                <img src="uwy4w7-bw.png" alt="preview">
+            </div>
+            <div class="dc-body">
+                <div class="dc-name">ImGui Menu Phantom</div>
+                <div class="dc-user">
+                    <span class="dc-avatar"><img src="pfp.webp" alt="Enzo"></span>
+                    <div class="dc-user-info">
+                        <span class="dc-lyapos">Enzo</span>
+                        <span class="dc-admin">Owner</span>
+                    </div>
+                </div>
+                <button class="dc-buy">
+                    <span class="dc-price">Buy — 60$</span>
+                    <span class="dc-chevron"><i class="fa-solid fa-chevron-right"></i></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="support-popup" id="supportPopup">
+        <h4>Need help?</h4>
+        <p>We usually reply within a few minutes.</p>
+        <button class="support-opt" onclick="toggleSupport()">
+            <i class="fa-brands fa-discord i-discord"></i> Join our Discord
+        </button>
+        <button class="support-opt" onclick="toggleSupport()">
+            <i class="fa-solid fa-envelope i-mail"></i> Contact support
+        </button>
+        <button class="support-opt" onclick="toggleSupport()">
+            <i class="fa-solid fa-circle-question i-help"></i> FAQ
+        </button>
+    </div>
+
+    <button class="support-fab" id="supportFab" onclick="toggleSupport()" title="Support">
+        <i class="fa-solid fa-headset"></i>
+    </button>
+
+    <div class="wo-modal" id="woModal">
+        <div class="wo-box">
+            <img class="wo-gif" src="welcome.gif" alt="welcome">
+            <div class="wo-body">
+                <div class="wo-title">Welcome to <span>ImGui Shack</span></div>
+                <div class="wo-sub">Have fun!</div>
+                <button class="wo-btn" onclick="closeWelcome()">Let's go</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="pm-modal" id="pmModal">
+        <div class="pm-box">
+            <div class="pm-gallery">
+                <button class="pm-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+                <div class="pm-media" id="pmMedia"></div>
+                <div class="pm-dots" id="pmDots"></div>
+            </div>
+            <div class="pm-info">
+                <h3>ImGui Menu Phantom</h3>
+                <div class="pm-price">60$</div>
+                <button class="pm-buy">Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="linewaves.js"></script>
+    <script>
+        initLineWaves(document.getElementById('linewaves'), {
+            brightness: 0.18,
+            colorCycleSpeed: 1.0,
+            color1: '#34d36b',
+            color2: '#1f9e57',
+            color3: '#4ade80'
+        });
+
+        const pmSlides = [
+            { src: 'uwy4w7.png', filter: '' },
+            { type: 'video', src: 'https://www.youtube.com/embed/ubiqIJKWwa0' }
+        ];
+
+        let pmIndex = 0;
+        const pmMedia = document.getElementById('pmMedia');
+        const pmDots = document.getElementById('pmDots');
+
+        function renderDots() {
+            pmDots.innerHTML = '';
+            pmSlides.forEach((s, i) => {
+                const dot = document.createElement('span');
+                dot.className = 'pm-dot' + (i === pmIndex ? ' active' : '');
+                dot.onclick = () => goSlide(i);
+                pmDots.appendChild(dot);
+            });
+        }
+
+        function renderSlide() {
+            const s = pmSlides[pmIndex];
+            if (s.type === 'video') {
+                pmMedia.innerHTML = '<iframe src="' + s.src + '" title="video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            } else {
+                pmMedia.innerHTML = '<img src="' + s.src + '" class="' + s.filter + '" alt="product">';
+            }
+            renderDots();
+        }
+
+        function goSlide(i) {
+            pmIndex = (i + pmSlides.length) % pmSlides.length;
+            renderSlide();
+        }
+
+        let pmTimer = null;
+
+        function openModal() {
+            pmIndex = 0;
+            renderSlide();
+            document.getElementById('pmModal').classList.add('open');
+            pmTimer = setInterval(function () { goSlide(pmIndex + 1); }, 4000);
+        }
+
+        function closeModal() {
+            document.getElementById('pmModal').classList.remove('open');
+            if (pmTimer) { clearInterval(pmTimer); pmTimer = null; }
+        }
+
+        document.querySelector('.dc-buy').addEventListener('click', openModal);
+
+        document.getElementById('pmModal').addEventListener('click', function (e) {
+            if (e.target === this) closeModal();
+        });
+
+        function toggleSupport() {
+            document.getElementById('supportPopup').classList.toggle('open');
+        }
+
+        const tiltCard = document.querySelector('.discord-card');
+
+        tiltCard.addEventListener('mousemove', function (e) {
+            const r = tiltCard.getBoundingClientRect();
+            const px = (e.clientX - r.left) / r.width;
+            const py = (e.clientY - r.top) / r.height;
+            const rotX = (0.5 - py) * 14;
+            const rotY = (px - 0.5) * 14;
+            tiltCard.style.transition = 'transform 0.05s linear';
+            tiltCard.style.transform = 'perspective(900px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
+        });
+
+        tiltCard.addEventListener('mouseleave', function () {
+            tiltCard.style.transition = 'transform 0.4s ease';
+            tiltCard.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)';
+        });
+
+        function closeWelcome() {
+            document.getElementById('woModal').classList.remove('open');
+        }
+
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                document.getElementById('woModal').classList.add('open');
+            }, 500);
+        });
+    </script>
+</body>
+</html>
