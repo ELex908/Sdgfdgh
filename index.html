@@ -425,6 +425,28 @@
 
         .pm-buy:hover { background: #4ade80; }
 
+        .pm-notice {
+            display: none;
+            margin-top: 14px;
+            background: rgba(52,211,107,0.12);
+            border: 1px solid rgba(52,211,107,0.4);
+            border-radius: 10px;
+            padding: 11px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #d7ffe8;
+            line-height: 1.5;
+        }
+
+        .pm-notice a {
+            color: #fff;
+            font-weight: 800;
+            text-decoration: none;
+            border-bottom: 1px dashed rgba(255,255,255,0.5);
+        }
+
+        .pm-notice a:hover { color: #4ade80; }
+
         /* ---- Support widget ---- */
         .support-fab {
             position: fixed;
@@ -629,7 +651,7 @@
     <div class="linewaves-bg" id="linewaves"></div>
     <div class="topbar">
         Im<span>Gui</span> Shack
-        <a href="#" class="discord" title="Discord"><i class="fa-brands fa-discord"></i></a>
+        <a href="https://discord.gg/cBW3H7ZdeX" class="discord" title="Discord" target="_blank" rel="noopener"><i class="fa-brands fa-discord"></i></a>
     </div>
     <div class="card-wrap">
         <div class="discord-card">
@@ -656,7 +678,7 @@
     <div class="support-popup" id="supportPopup">
         <h4>Need help?</h4>
         <p>We usually reply within a few minutes.</p>
-        <button class="support-opt" onclick="toggleSupport()">
+        <button class="support-opt" onclick="window.open('https://discord.gg/cBW3H7ZdeX','_blank')">
             <i class="fa-brands fa-discord i-discord"></i> Join our Discord
         </button>
         <button class="support-opt" onclick="toggleSupport()">
@@ -692,7 +714,8 @@
             <div class="pm-info">
                 <h3>ImGui Menu Phantom</h3>
                 <div class="pm-price">60$</div>
-                <button class="pm-buy">Checkout</button>
+                <button class="pm-buy" onclick="checkoutNotice()">Checkout</button>
+                <div class="pm-notice" id="pmNotice"></div>
             </div>
         </div>
     </div>
@@ -784,6 +807,11 @@
 
         function closeWelcome() {
             document.getElementById('woModal').classList.remove('open');
+        }
+
+        function checkoutNotice() {
+            document.getElementById('pmNotice').innerHTML = 'Our checkout system is down at the moment — please <a href="https://discord.gg/cBW3H7ZdeX" target="_blank" rel="noopener">go to our Discord</a> and we\'ll sort you out!';
+            document.getElementById('pmNotice').style.display = 'block';
         }
 
         window.addEventListener('load', function () {
